@@ -1,0 +1,43 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Check out the code from the Git repository
+                checkout scm
+            }
+        }
+
+        stage('Build') {
+            steps {
+                // Build the Java application using Maven
+                sh 'mvn clean install'
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                // Build a Docker image
+                script {
+                    def dockerImage = docker.build('Java Project:latest', '.')
+                }
+            }
+        }
+
+       
+    }
+
+    post {
+        success {
+            // Notify about successful build, Docker image creation, and deployment
+            echo 'Pipeline completed successfully!'
+        }
+
+        failure {
+            // Notify about pipeline failure
+            echo 'Pipeline failed!'
+        }
+    }
+}
+
